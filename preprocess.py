@@ -41,7 +41,7 @@ def dictToVect(dict):
     return X.toarray()
     
 def getIdsByCategory(df, category):
-    return df[df["Category"] == 'Business'].Id.unique()
+    return df[df["Category"] == category].Id.unique()
     
 
 def getDuplicates(theta, categories, df):
@@ -49,15 +49,14 @@ def getDuplicates(theta, categories, df):
     for category in categories:
         dict = categoryDict(df, category)
         X = dictToVect(dict)
+        ids = []
         ids = getIdsByCategory(df, category)
-        for i in range(len(ids)):
+        for i,id1 in enumerate(ids):
             vec1 = X[i].reshape(1,-1)
-            id1 = ids[i]
-            for j in range(i+1, len(ids)):
+            for j,id2 in enumerate(ids[i+1:], start=i+1):
                 vec2 = X[j].reshape(1,-1)
-                id2 = ids[j]
                 cs = cosine_similarity(vec1, vec2)
-                if cs>= theta:
-                    duplicates.append([id1, id2, cs])
+                if cs[0][0]>= theta:
+                    duplicates.append([id1, id2, cs[0][0]])
     return duplicates
     
