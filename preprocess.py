@@ -1,3 +1,4 @@
+import time
 import numpy as np
 import pandas as pd
 from os import path
@@ -20,7 +21,7 @@ def getCategoryContents(df, category):
 
 def saveWordcloud(data, category):
     # Create and generate a word cloud image:
-    print('Create a wordcloud for category', category)
+    print('Creating a wordcloud for category', category)
     wordcloud=WordCloud(max_font_size=50, max_words=100, background_color="white").generate(data)
 
     # Display the generated image:
@@ -29,9 +30,9 @@ def saveWordcloud(data, category):
     plt.savefig("wordclouds/"+category+".png", format="png")
     
 #Duplicate section functions
-def categoryDict(df, category):
+def getDict(df):
     dict = []
-    for content in df[df["Category"] == category].Content:
+    for content in df.Content:
         dict.append(content)        
     return dict
     
@@ -40,23 +41,25 @@ def dictToVect(dict):
     X = vectorizer.fit_transform(dict)
     return X.toarray()
     
-def getIdsByCategory(df, category):
-    return df[df["Category"] == category].Id.unique()
+def getIds(df):
+    return df.Id.unique()
     
 
-def getDuplicates(theta, categories, df):
+def getDuplicates(theta, df):
+    print('Finding duplicates with theta threshold', theta)
+    start_time = time.time()
     duplicates = []
-    for category in categories:
-        dict = categoryDict(df, category)
-        X = dictToVect(dict)
-        ids = []
-        ids = getIdsByCategory(df, category)
-        for i,id1 in enumerate(ids):
-            vec1 = X[i].reshape(1,-1)
-            for j,id2 in enumerate(ids[i+1:], start=i+1):
-                vec2 = X[j].reshape(1,-1)
-                cs = cosine_similarity(vec1, vec2)
-                if cs[0][0]>= theta:
-                    duplicates.append([id1, id2, cs[0][0]])
+    dict = getDict(df)
+    X = dictToVect(dict)
+    ids = getIds(df)
+    for i,id1 in enumerate(ids):
+        vec1 = X[i].reshape(1,-1)
+        for j,id2 in enumerate(ids[i+1:], start=i+1):
+            vec2 = X[j].reshape(1,-1)
+            cs = cosine_similarity(vec1, vec2)
+            if cs[0][0]>= theta:
+                duplicates.append([id1, id2, cs[0][0]])
+    elapsed_time = time.time() - start_time
+    print('All duplicates with theta threshold', theta, 'has been found in', elapsed_time, 'seconds')
     return duplicates
     
