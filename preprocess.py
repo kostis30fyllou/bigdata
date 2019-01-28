@@ -6,6 +6,9 @@ from wordcloud import WordCloud, ImageColorGenerator
 import matplotlib.pyplot as plt
 from sklearn.feature_extraction.text import HashingVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+from multiprocessing import Pool as ThreadPool
+from functools import partial
+import time
 
 
 #Read Data functions
@@ -43,20 +46,42 @@ def dictToVect(dict):
 def getIdsByCategory(df, category):
     return df[df["Category"] == category].Id.unique()
     
+def getCategoryDuplicates(category, theta, df):
+    duplicates = [[],[],[]]
+    dict = categoryDict(df, category)
+    X = dictToVect(dict)
+    ids = []
+    ids = getIdsByCategory(df, category)
+    for i,id1 in enumerate(ids):
+        vec1 = X[i].reshape(1,-1)
+        for j,id2 in enumerate(ids[i+1:], start=i+1):
+            vec2 = X[j].reshape(1,-1)
+            cs = cosine_similarity(vec1, vec2)
+            if cs[0][0]>= theta:
+                duplicates[0].append(id1)
+                duplicates[1].append(id2)
+                duplicates[2].append(cs[0][0])
+    return duplicates
 
 def getDuplicates(theta, categories, df):
-    duplicates = []
-    for category in categories:
-        dict = categoryDict(df, category)
-        X = dictToVect(dict)
-        ids = []
-        ids = getIdsByCategory(df, category)
-        for i,id1 in enumerate(ids):
-            vec1 = X[i].reshape(1,-1)
-            for j,id2 in enumerate(ids[i+1:], start=i+1):
-                vec2 = X[j].reshape(1,-1)
-                cs = cosine_similarity(vec1, vec2)
-                if cs[0][0]>= theta:
-                    duplicates.append([id1, id2, cs[0][0]])
-    return duplicates
+    print("Finding duplicates per category");
+    start = time.time();
+    pool = ThreadPool(len(categories))
+    duplicates = pool.map(partial(getCategoryDuplicates, theta=theta, df=df), categories)
+    pool.close()
+    pool.join()
+    end = time.time() - start
+    print("All duplicates has beed found in",end,'seconds')
+    write = pd.DataFrame(columns=['Document_Id1', 'Document_Id2', 'Similarity'])
+    ids1 = []
+    ids2 = []
+    cs = []
+    for i in range(len(categories)):
+        ids1.extend(duplicates[i][0])
+        ids2.extend(duplicates[i][1])
+        cs.extend(duplicates[i][2])
+    write['Document_Id1'] = ids1
+    write['Document_Id2'] = ids2
+    write['Similarity'] = cs
+    return write
     
