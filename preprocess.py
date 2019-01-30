@@ -11,25 +11,29 @@ from functools import partial
 import time
 
 
-#Read Data functions
+#Utils section functions
 def read_csv(path):
     df = pd.read_csv(path, sep='\t', index_col=0)
     return df
+
+def write_csv(path, df):
+    df.to_csv(path, sep='\t')
 
 #WordCloud section functions
 def getCategoryContents(df, category):
     text = " ".join(review for review in df[df["Category"] == category].Content)
     return text
 
-def saveWordcloud(data, category):
+def saveWordCloud(df, category):
     # Create and generate a word cloud image:
-    print('Create a wordcloud for category', category)
+    print('Creating a wordcloud for category', category)
+    data = getCategoryContents(df, category)
     wordcloud=WordCloud(max_font_size=50, max_words=100, background_color="white").generate(data)
 
     # Display the generated image:
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis("off")
-    plt.savefig("wordclouds/"+category+".png", format="png")
+    plt.savefig(category+".png", format="png")
     
 #Duplicate section functions
 def categoryDict(df, category):
@@ -47,7 +51,7 @@ def getIdsByCategory(df, category):
     return df[df["Category"] == category].Id.unique()
     
 def getCategoryDuplicates(category, theta, df):
-    duplicates = [[],[],[]]
+    duplicates = []
     dict = categoryDict(df, category)
     X = dictToVect(dict)
     ids = []
@@ -58,10 +62,8 @@ def getCategoryDuplicates(category, theta, df):
             vec2 = X[j].reshape(1,-1)
             cs = cosine_similarity(vec1, vec2)
             if cs[0][0]>= theta:
-                duplicates[0].append(id1)
-                duplicates[1].append(id2)
-                duplicates[2].append(cs[0][0])
-    return duplicates
+                duplicates.append({'Document_Id1': id1, 'Document_Id2': id2, 'Similarity': cs[0][0]})
+    return duplicates;
 
 def getDuplicates(theta, categories, df):
     print("Finding duplicates per category");
@@ -70,18 +72,10 @@ def getDuplicates(theta, categories, df):
     duplicates = pool.map(partial(getCategoryDuplicates, theta=theta, df=df), categories)
     pool.close()
     pool.join()
+    duplicatesDf = pd.DataFrame()
+    for i in range(len(categories)):
+        duplicatesDf = duplicatesDf.append(pd.DataFrame(duplicates[i]), ignore_index=True)
     end = time.time() - start
     print("All duplicates has beed found in",end,'seconds')
-    write = pd.DataFrame(columns=['Document_Id1', 'Document_Id2', 'Similarity'])
-    ids1 = []
-    ids2 = []
-    cs = []
-    for i in range(len(categories)):
-        ids1.extend(duplicates[i][0])
-        ids2.extend(duplicates[i][1])
-        cs.extend(duplicates[i][2])
-    write['Document_Id1'] = ids1
-    write['Document_Id2'] = ids2
-    write['Similarity'] = cs
-    return write
+    return duplicatesDf
     
