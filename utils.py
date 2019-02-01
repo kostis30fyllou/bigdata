@@ -30,7 +30,8 @@ def toArray(doc1, doc2, vectorizer):
     Y = vectorizer.transform([doc2])
     return X.toarray(), Y.toarray()
 
-def getCandidates(df, char_ngram=5, seeds=100, bands=5, hashbytes=4):
+def getCandidates(df, char_ngram=5, seeds=100, bands=20, hashbytes=4):
+    print('Finding cadindate duplicate pairs with LSH technique')
     sims = []
     hasher = minhash.MinHasher(seeds=seeds, char_ngram=char_ngram, hashbytes=hashbytes)
     if seeds % bands != 0:

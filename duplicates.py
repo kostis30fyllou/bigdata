@@ -3,6 +3,7 @@ from utils import *
 from sklearn.metrics.pairwise import cosine_similarity
 
 def getDuplicates(candidates, theta, df):
+    print('Finding duplicates from candidates')
     duplicates = []
     vectorizer = toVectorizer(df)
     for ((i, docid1), (j, docid2)) in candidates:
@@ -15,7 +16,7 @@ def getDuplicates(candidates, theta, df):
 
 theta = float(input("Enter theta:"))
 df = read_csv("train_set.csv")
-candidates = getCandidates(df, char_ngram=5, seeds=100, bands=20, hashbytes=4)
+candidates = getCandidates(df)
 duplicates = getDuplicates(candidates, theta, df);
 result = pd.DataFrame(duplicates)
 if theta == 0.7:	
