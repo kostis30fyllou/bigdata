@@ -1,0 +1,3 @@
+[submodule "LSH"]
+	path = LSH
+	url = https://github.com/mattilyra/LSH.git
