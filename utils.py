@@ -26,9 +26,9 @@ def toVectorizer(df):
     return vectorizer
     
 def toArray(doc1, doc2, vectorizer):
-    X = vectorizer.transform(doc1)
-    Y = vectorizer.transform(doc2)
-    return X, Y
+    X = vectorizer.transform([doc1])
+    Y = vectorizer.transform([doc2])
+    return X.toarray(), Y.toarray()
 
 def getCandidates(df, char_ngram=5, seeds=100, bands=20, hashbytes=4):
     print('Finding cadindate duplicate pairs with LSH technique')
