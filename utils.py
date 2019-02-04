@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.feature_extraction.text import TfidfVectorizer
 import itertools
 from lsh import cache, minhash # https://github.com/mattilyra/lsh
+from sklearn.preprocessing import label_binarize
 
 def read_csv(path):
     df = pd.read_csv(path, sep='\t', index_col=0)
@@ -51,4 +52,12 @@ def getCandidates(df, char_ngram=5, seeds=100, bands=20, hashbytes=4):
                 pairs = set(itertools.combinations(b[bucket_id], r=2))
                 candidatePairs.update(pairs)
     return candidatePairs
-	
+
+def binarize(documents, categories):
+    return label_binarize(documents, classes=categories)
+
+def getVariance(ratios):
+    variance = 0.0
+    for ratio in ratios:
+        variance += ratio
+    return variance
