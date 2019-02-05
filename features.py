@@ -27,10 +27,10 @@ def svd(documents):
 def w2v(documents):
     print('Trasform train data with average word to vector')
     trains = [[text for text in doc.split()] for doc in documents]
-    model = word2vec.Word2Vec(documents,\
-                          workers=4,\
-                          size=100,\
-                          min_count=1)
+    model = word2vec.Word2Vec(documents,
+                              workers=4,
+                              size=100,
+                              min_count=1)
     X = getAvgFeatureVecs(trains, model, 100)
     return X
 

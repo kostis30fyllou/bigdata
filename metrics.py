@@ -9,8 +9,8 @@ from features import *
 def evaluationMetrics(documents, categories):
     metrics = []
     for (X,feature) in ((bow(documents), 'BoW'), 
-                            (svd(documents), 'SVD'), 
-                            (w2v(documents), 'W2V')):
+                        (svd(documents), 'SVD'), 
+                        (w2v(documents), 'W2V')):
         for (clf, name) in ((svm(), 'SVM'),
                             (randomForest(), 'Random Forest')):
             print('*' * 80)
