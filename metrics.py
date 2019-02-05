@@ -28,6 +28,9 @@ def evaluationMetrics(documents, categories):
     return metrics
 
 def beatTheBenchmark(documents, categories, testDf):
+    print('*' * 80)
+    print("Executing Beat the Benchmark method")
+    print('*' * 80)  
     X, Y = myfeature(documents, testDf.Content)
     clf = svm()
     scoring = {'accuracy': 'accuracy',
