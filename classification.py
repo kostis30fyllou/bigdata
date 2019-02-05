@@ -1,16 +1,14 @@
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 
-def svm(X, Y, categories):
+def svm():
+    print("Create a SVM.SVC classifier")
     clf = SVC(gamma='scale')
-    clf.fit(X, categories)
-    predicted = clf.predict(Y)
-    return predicted
+    return clf
 
-def randomForest(X, Y, categories):
+def randomForest():
+    print("Create a Random Forest classifier")
     clf = RandomForestClassifier(n_estimators=100, max_depth=2,random_state=0)
-    clf.fit(X, categories)
-    predicted = clf.predict(Y)
-    return predicted
+    return clf
 
 

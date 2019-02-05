@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 from sklearn.feature_extraction.text import TfidfVectorizer
 import itertools
 from lsh import cache, minhash # https://github.com/mattilyra/lsh
-from sklearn.preprocessing import label_binarize
 
 def read_csv(path):
     df = pd.read_csv(path, sep='\t', index_col=0)
@@ -53,11 +52,32 @@ def getCandidates(df, char_ngram=5, seeds=100, bands=20, hashbytes=4):
                 candidatePairs.update(pairs)
     return candidatePairs
 
-def binarize(documents, categories):
-    return label_binarize(documents, classes=categories)
-
 def getVariance(ratios):
     variance = 0.0
     for ratio in ratios:
         variance += ratio
     return variance
+
+def featureVecMethod(words, model, num_features):
+    # Pre-initialising empty numpy array for speed
+    featureVec = np.zeros(num_features,dtype="float32")
+    nwords = 0 
+    #Converting Index2Word which is a list to a set for better speed in the execution.
+    index2word_set = set(model.wv.index2word)
+    for word in  words:
+        if word in index2word_set:
+            nwords = nwords + 1
+            featureVec = np.add(featureVec,model[word]) 
+    # Dividing the result by number of words to get average
+    if nwords != 0:
+        featureVec = np.divide(featureVec, nwords)
+    return featureVec
+
+# Function for calculating the average feature vector
+def getAvgFeatureVecs(reviews, model, num_features):
+    counter = 0
+    reviewFeatureVecs = np.zeros((len(reviews),num_features),dtype="float32")
+    for review in reviews:         
+        reviewFeatureVecs[counter] = featureVecMethod(review, model, num_features)
+        counter = counter+1   
+    return reviewFeatureVecs
