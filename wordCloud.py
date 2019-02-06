@@ -1,5 +1,6 @@
-import pandas as pd
 from utils import *
+from wordcloud import WordCloud, ImageColorGenerator
+import matplotlib.pyplot as plt
 
 def saveWordCloud(df, category):
     # Create and generate a word cloud image:

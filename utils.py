@@ -1,7 +1,5 @@
 import numpy as np
 import pandas as pd
-from wordcloud import WordCloud, ImageColorGenerator
-import matplotlib.pyplot as plt
 from sklearn.feature_extraction.text import TfidfVectorizer
 import itertools
 from lsh import cache, minhash # https://github.com/mattilyra/lsh
