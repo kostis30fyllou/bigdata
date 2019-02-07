@@ -29,7 +29,7 @@ def toArray(doc1, doc2, vectorizer):
     return X.toarray(), Y.toarray()
 
 def getCandidates(df, char_ngram=5, seeds=100, bands=20, hashbytes=4):
-    print('Finding cadindate duplicate pairs with LSH technique')
+    print('Finding cadindates duplicates pairs with LSH technique')
     sims = []
     hasher = minhash.MinHasher(seeds=seeds, char_ngram=char_ngram, hashbytes=hashbytes)
     if seeds % bands != 0:
@@ -48,6 +48,7 @@ def getCandidates(df, char_ngram=5, seeds=100, bands=20, hashbytes=4):
             if len(b[bucket_id]) > 1:            
                 pairs = set(itertools.combinations(b[bucket_id], r=2))
                 candidatePairs.update(pairs)
+    print('It found', len(candidatePairs), 'candidates pairs')
     return candidatePairs
 
 def getVariance(ratios):

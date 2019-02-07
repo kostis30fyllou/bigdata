@@ -11,6 +11,7 @@ def getDuplicates(candidates, theta, df):
         cs = cosine_similarity(vec1, vec2)
         if cs[0][0]>= theta:
             duplicates.append({'Document_Id1': docid1, 'Document_Id2': docid2, 'Similarity': cs[0][0]})
+    print('It found', len(duplicates), 'duplicates')
     return duplicates
     
 

@@ -24,7 +24,7 @@ def evaluationMetrics(documents, categories):
             precision = scores['test_precision'].mean()
             recall = scores['test_recall'].mean()
             F1 = 2 * (precision * recall) / (precision + recall)
-            metrics.append([{name+'('+feature+')':accuracy}, {name+'('+feature+')':precision}, {name+'('+feature+')':recall}, {name+'('+feature+')':F1}])
+            metrics.append([{name+'('+feature+')':"{0:.2f}".format(accuracy)}, {name+'('+feature+')':"{0:.2f}".format(precision)}, {name+'('+feature+')':"{0:.2f}".format(recall)}, {name+'('+feature+')':"{0:.2f}".format(F1)}])
     return metrics
 
 def beatTheBenchmark(documents, categories, testDf):
@@ -43,7 +43,8 @@ def beatTheBenchmark(documents, categories, testDf):
     F1 = 2 * (precision * recall) / (precision + recall)
     clf.fit(X, categories)
     predicted = clf.predict(Y)
-    return ([{'MyMethod':accuracy}, {'MyMethod':precision}, {'MyMethod':recall}, {'MyMethod':F1}], 
+    return ([{'MyMethod':"{0:.2f}".format(accuracy)}, {'MyMethod':"{0:.2f}".format(precision)}, 
+	    {'MyMethod':"{0:.2f}".format(recall)}, {'MyMethod':"{0:.2f}".format(F1)}], 
             {'Test_Document_ID': testDf.Id.tolist(), 'Predicted_Category': predicted})
             
 documents = read_csv("train_set.csv").Content
