@@ -57,6 +57,7 @@ def getVariance(ratios):
         variance += ratio
     return variance
 
+# Function to average all word vectors in a document
 def featureVecMethod(words, model, num_features):
     # Pre-initialising empty numpy array for speed
     featureVec = np.zeros(num_features,dtype="float32")
@@ -73,10 +74,10 @@ def featureVecMethod(words, model, num_features):
     return featureVec
 
 # Function for calculating the average feature vector
-def getAvgFeatureVecs(reviews, model, num_features):
+def getAvgFeatureVecs(documents, model, num_features):
     counter = 0
-    reviewFeatureVecs = np.zeros((len(reviews),num_features),dtype="float32")
-    for review in reviews:         
-        reviewFeatureVecs[counter] = featureVecMethod(review, model, num_features)
+    documentFeatureVecs = np.zeros((len(documents),num_features),dtype="float32")
+    for document in documents:         
+        documentFeatureVecs[counter] = featureVecMethod(document, model, num_features)
         counter = counter+1   
-    return reviewFeatureVecs
+    return documentFeatureVecs
